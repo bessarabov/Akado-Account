@@ -1,7 +1,11 @@
 package WWW::Provider::Akado;
 
-use warnings;
 use strict;
+use warnings FATAL => 'all';
+use DDP; # TODO bes - remove it
+use Carp;
+use WWW::Mechanize;
+use LWP::Debug qw(+); # TODO bes - remove debug
 
 =head1 NAME
 
@@ -34,18 +38,46 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 new
+
+TODO bes - pod for new()
 
 =cut
 
-sub function1 {
+sub new {
+    my ($class, $self) = @_;
+
+    croak 'No login specified, stopped' unless $self->{login};
+    croak 'No password specified, stopped' unless $self->{password};
+
+    $self->{site} ||= 'https://office.akado.ru/';
+
+    bless($self, $class);
+    return $self;
 }
 
-=head2 function2
+# TODO bes - pod get_data()
 
-=cut
+sub get_data {
+    my ($self) = @_;
 
-sub function2 {
+    my $mech = WWW::Mechanize->new(
+        agent => "WWW::Provider::Akado/$VERSION"
+    );
+
+    $mech->get( $self->{site} . "/login.xml" );
+
+    $mech->submit_form(
+        form_number => 1,
+        fields      => {
+            login    => $self->{login},
+            password => $self->{password},
+        }
+    );
+
+    return $mech->content;
+
+    return '';
 }
 
 =head1 AUTHOR
