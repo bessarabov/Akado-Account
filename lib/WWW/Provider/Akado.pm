@@ -1,5 +1,13 @@
 package WWW::Provider::Akado;
 
+=head1 NAME
+
+WWW::Provider::Akado - get account info from internet provider Akado'
+
+=cut
+
+our $VERSION = '0.01';
+
 use strict;
 use warnings FATAL => 'all';
 use DDP; # TODO bes - remove it
@@ -7,36 +15,9 @@ use Carp;
 use WWW::Mechanize;
 use LWP::Debug qw(+); # TODO bes - remove debug
 
-=head1 NAME
-
-WWW::Provider::Akado - The great new WWW::Provider::Akado!
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
-
-
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
-
-    use WWW::Provider::Akado;
-
-    my $foo = WWW::Provider::Akado->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
+=head1 METHODS
 
 =head2 new
 
@@ -56,9 +37,13 @@ sub new {
     return $self;
 }
 
-# TODO bes - pod get_data()
+=head2 get_balance
 
-sub get_data {
+TODO bes - pod get_data()
+
+=cut
+
+sub get_balance {
     my ($self) = @_;
 
     my $mech = WWW::Mechanize->new(

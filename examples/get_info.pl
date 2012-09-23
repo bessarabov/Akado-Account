@@ -34,7 +34,7 @@ sub main {
         password => $password,
     });
 
-    p $wpa->get_data();
+    p $wpa->get_balance();
 
     # start here
     say '#END';
