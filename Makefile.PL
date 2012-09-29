@@ -13,7 +13,6 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'Digest::MD5' => 0,
-        'File::Slurp' => 9999.17,
         'LWP' => 0,
         'Test::More' => 0,
         'XML::Simple' => 0,
