@@ -1,8 +1,8 @@
-package WWW::Provider::Akado;
+package Akado::Account;
 
 =head1 NAME
 
-WWW::Provider::Akado - get account info from internet provider Akado
+Akado::Account - get account info from internet provider Akado
 
 =cut
 
@@ -10,9 +10,8 @@ our $VERSION = '0.01';
 
 use strict;
 use warnings FATAL => 'all';
-use 5.010; # TODO bes - remove it
-use DDP; # TODO bes - remove it
 use utf8;
+
 use Carp;
 use LWP;
 use HTTP::Request::Common;
@@ -76,7 +75,7 @@ sub _get_full_account_info_xml {
     my ($self) = @_;
 
     my $ua = LWP::UserAgent->new;
-    $ua->agent("WWW::Provider::Akado/$VERSION");
+    $ua->agent("Akado::Account/$VERSION");
     $ua->cookie_jar( {} );
 
     my $auth_response = $self->_get_auth_response($ua);
@@ -187,7 +186,7 @@ Ivan Bessarabov, C<< <ivan at bessarabov.ru> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-www-provider-akado at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-Provider-Akado>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Akado::Account>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -197,7 +196,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc WWW::Provider::Akado
+    perldoc Akado::Account
 
 
 You can also look for information at:
@@ -206,19 +205,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-Provider-Akado>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Akado::Account>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/WWW-Provider-Akado>
+L<http://annocpan.org/dist/Akado::Account>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/WWW-Provider-Akado>
+L<http://cpanratings.perl.org/d/Akado::Account>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/WWW-Provider-Akado/>
+L<http://search.cpan.org/dist/Akado::Account/>
 
 =back
 
@@ -239,4 +238,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of WWW::Provider::Akado
+1;

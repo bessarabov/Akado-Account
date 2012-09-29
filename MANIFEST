@@ -1,8 +1,9 @@
 Changes
+examples/get_info.pl
 MANIFEST
 Makefile.PL
 README
-lib/WWW/Provider/Akado.pm
+lib/Akado/Account.pm
 t/00-load.t
 t/manifest.t
 t/pod-coverage.t

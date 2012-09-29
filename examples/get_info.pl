@@ -17,7 +17,7 @@ use File::Slurp;
 
 # project modules
 use lib::abs qw(../lib);
-use WWW::Provider::Akado;
+use Akado::Account;
 
 # global vars
 
@@ -29,13 +29,13 @@ sub main {
     my $file = lib::abs::path('./akado_login_password');
     my ($login, $password) = read_file($file, chomp => 1);
 
-    my $wpa = WWW::Provider::Akado->new({
+    my $aa = Akado::Account->new({
         login => $login,
         password => $password,
     });
 
-    p $wpa->get_balance();
-    p $wpa->get_next_month_payment();
+    p $aa->get_balance();
+    p $aa->get_next_month_payment();
 
     say '#END';
 }

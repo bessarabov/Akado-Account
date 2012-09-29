@@ -1,10 +1,5 @@
-#!perl -T
-
 use Test::More tests => 1;
 
-BEGIN {
-    use_ok( 'WWW::Provider::Akado' ) || print "Bail out!
-";
-}
+use Akado::Account;
 
-diag( "Testing WWW::Provider::Akado $WWW::Provider::Akado::VERSION, Perl $], $^X" );
+ok "loaded ok";
