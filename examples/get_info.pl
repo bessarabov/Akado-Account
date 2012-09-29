@@ -35,8 +35,8 @@ sub main {
     });
 
     p $wpa->get_balance();
+    p $wpa->get_next_month_payment();
 
-    # start here
     say '#END';
 }
 
