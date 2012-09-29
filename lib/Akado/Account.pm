@@ -85,7 +85,7 @@ sub get_balance {
 It will return number. The number is the sum of money that the user will have
 to pay for the next month. The currencty is RUB (Russian rouble).
 
-    p $aa->get_next_month_payment();
+    say $aa->get_next_month_payment();
 
 If the object hasn't accessed the Akado account site
 L<https://office.akado.ru/> since the object was created, the method will
@@ -345,7 +345,27 @@ sub _check_response {
 
 =head1 AUTHOR
 
-Ivan Bessarabov, C<< <ivan at bessarabov.ru> >>
+Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
+
+=head1 SOURCE CODE
+
+The source code for this module is hosted on GitHub
+L<https://github.com/bessarabov/Akado-Account>
+
+=head1 BUGS
+
+Please report any bugs or feature requests in GitHub Issues
+L<https://github.com/bessarabov/Akado-Account/issues>
+
+=head1 TODO
+
+For now the object can return only several numbers, but the Akado site has
+much more data in it. So it will be great if this module can get more details
+about user account.
+
+For now he module does not have tests. It was created interacting with the
+production system. This is not good. The test should be added that mocks Akado
+site and its data.
 
 =head1 LICENSE AND COPYRIGHT
 
