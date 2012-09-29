@@ -2,7 +2,7 @@ package Akado::Account;
 
 =head1 NAME
 
-Akado::Account - get account info from internet provider Akado
+Akado::Account - get internet provider Akado account info
 
 =cut
 
@@ -13,18 +13,36 @@ use warnings FATAL => 'all';
 use utf8;
 
 use Carp;
-use LWP;
-use HTTP::Request::Common;
 use Digest::MD5 qw(md5_hex);
+use HTTP::Request::Common;
+use LWP;
 use XML::Simple;
 
 =head1 SYNOPSIS
+
+Akado is the internet provider that works in Moscow, Russia.
+L<http://www.akado.ru/>
+
+Every Akado customer has access to the site L<https://office.akado.ru/> where
+he can see his account info. This module creates Perl object that gets account
+info from that site.
+
+Unfortunately Akdado account site has no API, so this module acts as a browser
+to get needed info.
+
+Every module method dies in case of error.
 
 =head1 METHODS
 
 =head2 new
 
-TODO bes - pod for new()
+This a constuctor. It creates object. The constractor will not access the
+account site. All network interaction is made in the methods that return data.
+
+    my $aa = Akado::Account->new({
+        login => $login,
+        password => $password,
+    });
 
 =cut
 
@@ -42,7 +60,16 @@ sub new {
 
 =head2 get_balance
 
-TODO bes - pod get_data()
+It will return number. The number is the sum of money that is left on the
+user account. The currencty is RUB (Russian rouble).
+
+    say $aa->get_balance();     # will print '749.82', or something like this
+
+If the object hasn't accessed the Akado account site
+L<https://office.akado.ru/> since the object was created, the method will
+access site, get data from it and store it in the object. The object will
+access Akado site only once, after saving data in the object all methods use
+that cached data.
 
 =cut
 
@@ -53,12 +80,54 @@ sub get_balance {
     return $data->{balance};
 }
 
+=head2 get_next_month_payment
+
+It will return number. The number is the sum of money that the user will have
+to pay for the next month. The currencty is RUB (Russian rouble).
+
+    p $aa->get_next_month_payment();
+
+If the object hasn't accessed the Akado account site
+L<https://office.akado.ru/> since the object was created, the method will
+access site, get data from it and store it in the object. The object will
+access Akado site only once, after saving data in the object all methods use
+that cached data.
+
+=cut
+
 sub get_next_month_payment {
     my ($self) = @_;
 
     my $data = $self->_get_cached_parsed_data();
     return $data->{next_month_payment};
 }
+
+=begin comment _get_cached_parsed_data
+
+B<Get:> 1) $self
+
+B<Return:> 1) $parsed_data
+
+This is private method that should not be used outside the object.
+
+The method checks if the object has already accessed Akado site, if it hasn't
+the method gets the data from site, parses it, stores parsed data in the
+object and returnes the stored data.
+
+It the object already had accessed Akado site the method will just return
+stored parsed data.
+
+Sample of what it can return:
+
+    {
+        balance            => 749.82,
+        date               => "2012-09-29",
+        next_month_payment => 779,
+    }
+
+=end comment
+
+=cut
 
 sub _get_cached_parsed_data {
     my ($self) = @_;
@@ -71,20 +140,55 @@ sub _get_cached_parsed_data {
     return $self->{_parsed_data};
 }
 
+=begin comment _get_full_account_info_xml
+
+B<Get:> 1) $self
+
+B<Return:> 1) $xml
+
+Metod returns xml with user account info. Because the Akado site hasn't got
+API this method acts as a browser.
+
+=end comment
+
+=cut
+
 sub _get_full_account_info_xml {
     my ($self) = @_;
 
-    my $ua = LWP::UserAgent->new;
-    $ua->agent("Akado::Account/$VERSION");
-    $ua->cookie_jar( {} );
+    my $browser = LWP::UserAgent->new;
+    $browser->agent("Akado::Account/$VERSION");
+    $browser->cookie_jar( {} );
 
-    my $auth_response = $self->_get_auth_response($ua);
-    my $data_response = $self->_get_data_response($ua);
+    # At first we need to login to the site.
+    # Here we POST login/password and recieve session cookies that are stored
+    # in the UserAgent cookie_jar.
+    my $auth_response = $self->_get_auth_response($browser);
+
+    # Here we get account data using session cookies that we got at the
+    # previous step
+    my $data_response = $self->_get_data_response($browser);
 
     my $xml = $data_response->decoded_content;
 
     return $xml;
 }
+
+=begin comment _parse_xml
+
+B<Get:> 1) $self 2) $xml
+
+B<Return:> 1) $parsed_data
+
+Metod gets xml that was previously downloaded from the Akado account site and
+returnes some data from.
+
+This method is ugly written, but it does its job. The better thing is to
+rewrite it using XPath.
+
+=end comment
+
+=cut
 
 sub _parse_xml {
     my ($self, $xml) = @_;
@@ -112,14 +216,30 @@ sub _parse_xml {
     return $parsed_account_info;
 }
 
+=begin comment _get_auth_response
+
+B<Get:> 1) $self 2) $browser - LWP::UserAgent object
+
+B<Return:> 2) $response - HTTP::Response object
+
+The method gets LWP::UserAgent object that has cookies jar in it and logges to
+the Akado site. After the log in the cookies are stored in the $browser
+object to make it possible to access other pages.
+
+=end comment
+
+=cut
+
 sub _get_auth_response {
     my ($self, $browser) = @_;
 
     my $url = $self->{site} . "/login.xml/login";
+
+    # Akado site wants to get uppercase MD5 hashed password. The site does it
+    # in the client side javascript.
     my $md5 = uc(md5_hex($self->{password}));
 
     my $request = POST($url,
-        Accept => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         Content => [
             login    => $self->{login},
             password => $md5,
@@ -132,24 +252,30 @@ sub _get_auth_response {
     return $response;
 }
 
+=begin comment _get_data_response
+
+B<Get:> 1) $self 2) $browser - LWP::UserAgent object
+
+B<Return:> 2) $response - HTTP::Response object
+
+The method gets LWP::UserAgent object that has session cookies in it and the
+method returns the xml page with user account data.
+
+=end comment
+
+=cut
+
 sub _get_data_response {
     my ($self, $browser) = @_;
 
-
-    my $domain;
-
-    $browser->{cookie_jar}->scan(
-        sub {
-            $domain = $_[4];
-        }
-    );
-
+    # To get from Akado site data in xml format we need to add cookie render
+    # with the value 'xml'
     $browser->{cookie_jar}->set_cookie(
-        0,        # version, $key, $val,
+        0,        # version
         'render', # key
         'xml',    # value
         '/',      # $path
-        $domain,
+        $self->_get_domain_from_cookies($browser->{cookie_jar}), # domain
     );
 
     my $url = $self->{site} . "/account.xml";
@@ -165,6 +291,46 @@ sub _get_data_response {
     return $response;
 }
 
+=begin comment _get_data_response
+
+B<Get:> 1) $self 2) $cookies - HTTP::Cookies object
+
+B<Return:> 2) $domain - the string 'office.akado.ru' or something like this.
+
+Method gets domain part from existing cookies. This part is needed to create
+new cookie.
+
+=end comment
+
+=cut
+
+sub _get_domain_from_cookies {
+    my ($self, $cookies) = @_;
+
+    my $domain;
+
+    $cookies->scan(
+        sub {
+            $domain = $_[4];
+        }
+    );
+
+    return $domain
+}
+
+=begin comment _check_response
+
+B<Get:> 1) $self 2) $cookies - HTTP::Response object
+
+B<Return:> -
+
+The method checks that there was no error in accessing some page. If there was
+error, the die is performed.
+
+=end comment
+
+=cut
+
 sub _check_response {
     my ($self, $response) = @_;
 
@@ -177,53 +343,9 @@ sub _check_response {
     return '';
 }
 
-
-
 =head1 AUTHOR
 
 Ivan Bessarabov, C<< <ivan at bessarabov.ru> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-www-provider-akado at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Akado::Account>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Akado::Account
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Akado::Account>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Akado::Account>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Akado::Account>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Akado::Account/>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -234,7 +356,6 @@ under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
-
 
 =cut
 
