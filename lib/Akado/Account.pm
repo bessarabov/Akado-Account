@@ -6,7 +6,7 @@ Akado::Account - get internet provider Akado account info
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use strict;
 use warnings FATAL => 'all';
