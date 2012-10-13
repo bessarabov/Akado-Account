@@ -2,7 +2,6 @@
 
 use Test::More tests => 1;
 
-use lib::abs qw(../lib);
 use Akado::Account;
 
 # subs
