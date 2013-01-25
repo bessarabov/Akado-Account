@@ -1,9 +1,7 @@
 Changes
-MANIFEST
-Makefile.PL
-README
 lib/Akado/Account.pm
+Makefile.PL
+MANIFEST
+README
 t/00-load.t
-t/manifest.t
-t/pod-coverage.t
-t/pod.t
+t/_parse_xml.t
