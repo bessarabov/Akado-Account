@@ -1,12 +1,6 @@
 package Akado::Account;
 
-=head1 NAME
-
-Akado::Account - get internet provider Akado account info
-
-=cut
-
-our $VERSION = '0.02';
+# ABSTRACT: get internet provider Akado account info
 
 use strict;
 use warnings FATAL => 'all';
@@ -157,7 +151,7 @@ sub _get_full_account_info_xml {
     my ($self) = @_;
 
     my $browser = LWP::UserAgent->new;
-    $browser->agent("Akado::Account/$VERSION");
+    $browser->agent("Akado::Account/$Akado::Account::VERSION");
     $browser->cookie_jar( {} );
 
     # At first we need to login to the site.
@@ -340,20 +334,6 @@ sub _check_response {
     return '';
 }
 
-=head1 AUTHOR
-
-Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
-
-=head1 SOURCE CODE
-
-The source code for this module is hosted on GitHub
-L<https://github.com/bessarabov/Akado-Account>
-
-=head1 BUGS
-
-Please report any bugs or feature requests in GitHub Issues
-L<https://github.com/bessarabov/Akado-Account/issues>
-
 =head1 TODO
 
 For now the object can return only several numbers, but the Akado site has
@@ -363,16 +343,6 @@ about user account.
 For now he module does not have tests. It was created interacting with the
 production system. This is not good. The test should be added that mocks Akado
 site and its data.
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Ivan Bessarabov.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
