@@ -26,9 +26,7 @@ to get needed info.
 
 Every module method dies in case of error.
 
-=head1 METHODS
-
-=head2 new
+=method new
 
 This a constuctor. It creates object. The constractor will not access the
 account site. All network interaction is made in the methods that return data.
@@ -52,7 +50,7 @@ sub new {
     return $self;
 }
 
-=head2 get_balance
+=method get_balance
 
 It will return number. The number is the sum of money that is left on the
 user account. The currencty is RUB (Russian rouble).
@@ -74,7 +72,7 @@ sub get_balance {
     return $data->{balance};
 }
 
-=head2 get_next_month_payment
+=method get_next_month_payment
 
 It will return number. The number is the sum of money that the user will have
 to pay for the next month. The currencty is RUB (Russian rouble).
