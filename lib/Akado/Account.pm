@@ -26,6 +26,11 @@ to get needed info.
 
 Every module method dies in case of error.
 
+=head1 DESCRIPTION
+
+Akado::Account version numbers uses Semantic Versioning standart.
+Please visit L<http://semver.org/> to find out all about this great thing.
+
 =method new
 
 This a constuctor. It creates object. The constractor will not access the
