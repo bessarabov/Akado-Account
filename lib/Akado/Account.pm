@@ -196,8 +196,8 @@ sub _parse_xml {
 
     my $xp = XML::XPath->new( xml => $xml );
 
-    my $balance = $xp->findnodes('//status[@description="Остаток на счете"]/@amount')->[0]->getNodeValue();
-    my $next_month_payment = $xp->findnodes('//status[@description="Стоимость услуг в следующем месяце"]/@amount')->[0]->getNodeValue();
+    my $balance = $xp->findnodes('//status[contains(@description, "Остаток на счете на")]/@amount')->[0]->getNodeValue();
+    my $next_month_payment = $xp->findnodes('//status[@description="Стоимость услуг в следующем календарном месяце"]/@amount')->[0]->getNodeValue();
 
     my $parsed_account_info = {
         balance => $balance,
