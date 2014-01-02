@@ -24,7 +24,6 @@ sub main {
     is_deeply(
         $parsed,
         {
-            date => "2012-10-02",
             balance => 1558.82,
             next_month_payment => 779,
         },
