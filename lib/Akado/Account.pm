@@ -196,8 +196,8 @@ sub _parse_xml {
 
     my $xp = XML::XPath->new( xml => $xml );
 
-    my $balance = $xp->findnodes('//status[contains(@description, "Остаток на счете на")]/@amount')->[0]->getNodeValue();
-    my $next_month_payment = $xp->findnodes('//status[@description="Стоимость услуг в следующем календарном месяце"]/@amount')->[0]->getNodeValue();
+    my $balance = $xp->findnodes('//bill[contains(@description, "Остаток на счете на")]/@amount')->[0]->getNodeValue();
+    my $next_month_payment = $xp->findnodes('//bill[@description="Стоимость услуг в следующем календарном месяце"]/@amount')->[0]->getNodeValue();
 
     my $parsed_account_info = {
         balance => $balance,
@@ -224,16 +224,12 @@ object to make it possible to access other pages.
 sub _get_auth_response {
     my ($self, $browser) = @_;
 
-    my $url = $self->{site} . "/login.xml/login";
-
-    # Akado site wants to get uppercase MD5 hashed password. The site does it
-    # in the client side javascript.
-    my $md5 = uc(md5_hex($self->{password}));
+    my $url = $self->{site} . "/user/login.xml";
 
     my $request = POST($url,
         Content => [
             login    => $self->{login},
-            password => $md5,
+            password => $self->{password},
         ]
     );
 
@@ -269,7 +265,7 @@ sub _get_data_response {
         $self->_get_domain_from_cookies($browser->{cookie_jar}), # domain
     );
 
-    my $url = $self->{site} . "/account.xml";
+    my $url = $self->{site} . "/finance/display.xml";
 
     my $request = HTTP::Request->new(
         'GET',
